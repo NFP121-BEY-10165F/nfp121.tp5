@@ -4,12 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class JPanelListe2 extends JPanel implements ActionListener, ItemListener {
 
@@ -31,10 +26,12 @@ public class JPanelListe2 extends JPanel implements ActionListener, ItemListener
 
     private TextArea texte = new TextArea();
 
-    private List<String> liste;
+    private java.util.List<String> liste;
     private Map<String, Integer> occurrences;
+    
+     private Stack<java.util.List<String>> dataStateStck;
 
-    public JPanelListe2(List<String> liste, Map<String, Integer> occurrences) {
+    public JPanelListe2(java.util.List<String> liste, Map<String, Integer> occurrences) {
         this.liste = liste;
         this.occurrences = occurrences;
 
@@ -65,10 +62,15 @@ public class JPanelListe2 extends JPanel implements ActionListener, ItemListener
 
         add(cmd, "North");
         add(texte, "Center");
-
+        
+        boutonAnnuler.addActionListener(this);
+        saisie.addActionListener(this);
         boutonRechercher.addActionListener(this);
-        // à compléter;
-
+        boutonOccurrences.addActionListener(this);
+        ordreDecroissant.addItemListener(this);
+        ordreCroissant.addItemListener(this);
+        boutonRetirer.addActionListener(this);
+        boutonAnnuler.addActionListener(this);
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -99,21 +101,48 @@ public class JPanelListe2 extends JPanel implements ActionListener, ItemListener
         }
     }
 
-    public void itemStateChanged(ItemEvent ie) {
-        if (ie.getSource() == ordreCroissant)
-        ;// à compléter
-        else if (ie.getSource() == ordreDecroissant)
-        ;// à compléter
-
-        texte.setText(liste.toString());
+    public void itemStateChanged(ItemEvent ie) 
+    {
+        if(liste!=null&&ie!=null)
+        {
+            java.util.List<String> listSave = new ArrayList<String>(liste);
+            boolean res = false;
+            if (ie.getSource().equals(ordreCroissant))
+            {
+                res = true;
+                if(res)
+                  dataStateStck.push(listSave);
+                Collections.sort(liste);
+            }
+            else if (ie.getSource().equals(ordreDecroissant)){
+                res = true;
+                if(res)
+                    dataStateStck.push(listSave);
+                Collections.sort(liste, Collections.reverseOrder());
+            }
+            texte.setText(liste.toString());
+        }
     }
 
-    private boolean retirerDeLaListeTousLesElementsCommencantPar(String prefixe) {
-        boolean resultat = false;
-        // à compléter
-        // à compléter
-        // à compléter
-        return resultat;
-    }
-
+    private boolean retirerDeLaListeTousLesElementsCommencantPar(String prefixe)
+    {
+        if(prefixe!=null&&liste!=null)
+        {
+            boolean resultat = false;
+            java.util.List<String> temp = liste;
+            Iterator<String> iter = temp.iterator();
+            while(iter.hasNext()) {
+                String s = iter.next();
+    
+                if (s.startsWith(prefixe)) 
+                {
+                    iter.remove();
+                    resultat = true;
+                    occurrences.put(s, 0);
+                }
+            }
+            return resultat;
+        }
+        return false;
+    }  
 }

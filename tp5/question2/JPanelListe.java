@@ -63,7 +63,11 @@ public class JPanelListe extends JPanel implements ActionListener, ItemListener 
         add(texte, "Center");
 
         boutonRechercher.addActionListener(this);
-        // à compléter;
+        boutonRechercher.addActionListener(this);
+        boutonOccurrences.addActionListener(this);
+        ordreDecroissant.addItemListener(this);
+        ordreCroissant.addItemListener(this);
+        boutonRetirer.addActionListener(this);
 
     }
 
@@ -93,21 +97,32 @@ public class JPanelListe extends JPanel implements ActionListener, ItemListener 
         }
     }
 
-    public void itemStateChanged(ItemEvent ie) {
-        if (ie.getSource() == ordreCroissant)
-            ;// à compléter
-        else if (ie.getSource() == ordreDecroissant)
-            ;// à compléter
-
-        texte.setText(liste.toString());
+public void itemStateChanged(ItemEvent ie) {
+       if (ie!=null&&ie.getSource().equals(ordreCroissant))
+            Collections.sort(this.liste);
+        else if (ie!=null&&ie.getSource().equals(ordreDecroissant))
+            Collections.sort(this.liste, Collections.reverseOrder());
+        if(liste!=null&&texte!=null)
+            texte.setText(liste.toString());
     }
 
     private boolean retirerDeLaListeTousLesElementsCommencantPar(String prefixe) {
-        boolean resultat = false;
-        // à compléter
-        // à compléter
-        // à compléter
-        return resultat;
+      if(prefixe!=null)
+        {
+            boolean resultat = false;
+            Iterator<String> iter = this.liste.iterator();
+            while(iter.hasNext()) 
+            {
+                String s = iter.next();
+                if (s.startsWith(prefixe)) {
+                    iter.remove();
+                    resultat = true;
+                    this.occurrences.put(s, 0);
+                }
+            }
+            return resultat;
+        }
+        return false;
     }
 
 }
